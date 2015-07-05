@@ -8,11 +8,19 @@
     "good": "^6.2.0",
     "good-console": "^5.0.2",
     "hapi": "^8.8.0",
-    "morgan": "^1.6.1",
     "sqlite3": "^3.0.8",
-    "xml-escape": "^1.0.0"
+    "tmp": "0.0.26",
+    "unzip": "^0.1.11",
+    "xml-escape": "^1.0.0",
+    "xml-stream": "^0.4.5"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "grunt": "^0.4.5",
+    "grunt-mocha-test": "^0.12.7",
+    "mocha": "^2.2.5",
+    "should": "^7.0.1",
+    "sinon": "^1.15.4"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

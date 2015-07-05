@@ -1,4 +1,3 @@
-//var morgan = require('morgan');
 var Hapi = require('hapi');
 
 var NugetServer = require('./nuget-server');
@@ -19,23 +18,6 @@ var options = {
         events: { log: '*', response: '*' }
     }]
 };
-
-// app.use(morgan('dev', {
-//   immediate: false
-// }));
-
-//app.use(restify.acceptParser(app.acceptable));
-//app.use(restify.queryParser());
-//app.use(restify.bodyParser());
-
-// app.on('NotFound', function (req, res, error) {
-//   res.send(404);
-//   console.log('not found:', error);
-// });
-
-// app.on('uncaughtException', function (request, response, route, error) {
-//   console.log('error:', route, error);
-// });
 
 app.route({
   method: 'GET',
@@ -95,12 +77,6 @@ app.route({
   method: 'GET',
   path: '/package/{id}/{version}',
   handler: function (req, reply) {
-    server.findPackagesById(req.query.id, function(results) {
-      var content = atomParser(config.url, 'FindPackagesById', results);
-    
-      reply(content).type('application/atom+xml;type=feed;charset=utf-8');
-    });
-    
     server.download(req.params.id, req.params.version, function (stream) {
       reply(stream)
         .type('application/zip')
@@ -119,10 +95,10 @@ function pushRoute(path) {
     method: 'PUT',
     path: path,
     handler: function (req, reply) {
-      server.push('', req.payload.package, function () {
+      server.push('', req.payload.package, function (err) {
+        if(err) return reply().code(400);
+        
         reply().code(200);
-      }, function () {
-        reply().code(400);
       });
     },
     config: {
@@ -133,7 +109,7 @@ function pushRoute(path) {
         allow: 'multipart/form-data'
       }
     }
-  }
+  };
 }
 
 app.route({
@@ -149,13 +125,10 @@ app.register({
     register: require('good'),
     options: options
 }, function (err) {
-
     if (err) {
         console.error(err);
-    }
-    else {
+    } else {
         app.start(function () {
-
             console.info('Server started at ' + app.info.uri);
         });
     }
