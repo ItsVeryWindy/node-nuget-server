@@ -80,7 +80,7 @@ xmlns="http://www.w3.org/2007/app"> \
 						});
 						
 						var xml = new XmlStream(entry)
-						var group = null;
+						var groupTargetFramework = null;
 						
 						xml.on('endElement: package > metadata > id', function(item) {
   						 	packageInfo.id = item.$text;
@@ -144,42 +144,15 @@ xmlns="http://www.w3.org/2007/app"> \
 						});
 						
 						xml.on('startElement: package > metadata > dependencies > group', function(item) {
-							group = {
-								targetFramework: item.$.targetFramework,
-								dependencies: []
-							}
+							groupTargetFramework = item.$.targetFramework;
 						});
 						
 						xml.on('endElement: package > metadata > dependencies > group > dependency', function(item) {
-  							group.dependencies.push({ id: item.$.id, version: item.$.version });
+  							packageInfo.dependencies.push({ id: item.$.id, version: item.$.version, targetFramework: groupTargetFramework });
 						});
 						
 						xml.on('endElement: package > metadata > dependencies > group', function(item) {
   							packageInfo.dependencyGroups.push(group);
-						});
-						
-						xml.on('startElement: package > metadata > references', function(item) {
-  							packageInfo.references = [];
-							packageInfo.referenceGroups = [];
-						});
-						
-						xml.on('endElement: package > metadata > references > reference', function(item) {
-  							packageInfo.references.push(item.$.file);
-						});
-						
-						xml.on('startElement: package > metadata > references > group', function(item) {
-							group = {
-								targetFramework: item.$.targetFramework,
-								references: []
-							}
-						});
-						
-						xml.on('endElement: package > metadata > references > group > reference', function(item) {
-  							group.references.push(item.$.file);
-						});
-						
-						xml.on('endElement: package > metadata > references > group', function(item) {
-  							packageInfo.referenceGroups.push(group);
 						});
 						
 						xml.on('endElement: package > metadata > tags', function(item) {
